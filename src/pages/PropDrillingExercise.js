@@ -14,36 +14,42 @@ const RootComponent = (props) => {
   // eslint-disable-next-line
   const [cart, setCart] = useState({
     products: [
-      { id: "p1", title: "Product 1", price: 0, qty: 0 },
-      { id: "p2", title: "Product 2", price: 0, qty: 0 },
+      { id: "p1", title: "Product 1", price: 1999, qty: 0 },
+      { id: "p2", title: "Product 2", price: 999, qty: 0 },
     ],
     totalPrice: 0,
   });
 
   const addProductToCart = (newProduct) => {
-    const newProductList = cart.products.map((cartProduct) => {
-      if (cartProduct.id === newProduct.id) {
-        cartProduct.qty += 1;
-        cartProduct.price = newProduct.price;
-      }
-      return cartProduct;
-    });
-    const newTotalPrice = cart.totalPrice + newProduct.price;
-    setCart({ products: newProductList, totalPrice: newTotalPrice });
+
+    const selectedProduct = cart.products.find((p) => p.id === newProduct.id);
+    selectedProduct.qty += 1;
+      cart.products = cart.products.map(function (item) {
+        return item.id === selectedProduct.id ? selectedProduct : item;
+      });
+
+    const productPrices = cart.products.map((p) => p.price * p.qty);
+    const totalPrice = productPrices.reduce(
+      (sum, currentProduct) => sum + currentProduct,
+      0
+    );
+    setCart({ products: cart.products, totalPrice });
   };
 
   const removeProductFromCart = (removedProduct) => {
-    let newTotalPrice = cart.totalPrice;
-    const newProductList = cart.products
-      .map((cartProduct) => {
-        if (cartProduct.id === removedProduct.id) {
-          cartProduct.qty -= 1;
-          cartProduct.price -= removedProduct.price;
-          newTotalPrice -= removedProduct.price;
-        }
-        return cartProduct;
-      })
-    setCart({ products: newProductList, totalPrice: newTotalPrice });
+    const selectedProduct = cart.products.find((p) => p.id === removedProduct.id);
+    if (selectedProduct.qty > 0) {
+      selectedProduct.qty -= 1;
+    }
+    cart.products = cart.products.map(function (item) {
+      return item.id === selectedProduct.id ? selectedProduct : item;
+    });
+    const productPrices = cart.products.map((p) => p.price * p.qty);
+    const totalPrice = productPrices.reduce(
+      (sum, currentProduct) => sum + currentProduct,
+      0
+    );
+    setCart({ products: cart.products, totalPrice });
   };
 
   // Step 0 Read and understand the structure of the app
